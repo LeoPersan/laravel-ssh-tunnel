@@ -1,9 +1,9 @@
-<?php namespace	STS\Tunneler;
+<?php namespace	LeoPersan\Tunneler;
 
 use Illuminate\Support\ServiceProvider;
-use STS\Tunneler\Console\TunnelerCommand;
-use STS\Tunneler\Console\TunnelerReset;
-use STS\Tunneler\Jobs\CreateTunnel;
+use LeoPersan\Tunneler\Console\TunnelerCommand;
+use LeoPersan\Tunneler\Console\TunnelerReset;
+use LeoPersan\Tunneler\Jobs\CreateTunnel;
 
 
 class TunnelerServiceProvider extends ServiceProvider{
@@ -21,7 +21,7 @@ class TunnelerServiceProvider extends ServiceProvider{
     protected $configPath = __DIR__ . '/../config/tunneler.php';
 
 
-    public function boot()
+    public function boot(): void
     {
         // helps deal with Lumen vs Laravel differences
         if (function_exists('config_path')) {
@@ -32,12 +32,23 @@ class TunnelerServiceProvider extends ServiceProvider{
 
         $this->publishes([$this->configPath => $publishPath], 'config');
 
-        if (config('tunneler.on_boot')){
-            dispatch(new CreateTunnel());
+        foreach (config('tunneler.connections') as $connection => $config) {
+            $config = array_merge(config('tunneler.default'), $config);
+            config(['tunneler.connections.' . $connection => $config]);
+            if ($config['on_boot']) {
+                dispatch(new CreateTunnel($connection));
+            }
+        }
+
+        if ($this->app->runningInConsole()) {
+            $this->commands([
+                TunnelerCommand::class,
+                TunnelerReset::class,
+            ]);
         }
     }
 
-    public function register()
+    public function register(): void
     {
         if ( is_a($this->app,'Laravel\Lumen\Application')){
             $this->app->configure('tunneler');
@@ -66,7 +77,7 @@ class TunnelerServiceProvider extends ServiceProvider{
      *
      * @return array
      */
-    public function provides()
+    public function provides(): array
     {
         return ['command.tunneler.activate'];
     }

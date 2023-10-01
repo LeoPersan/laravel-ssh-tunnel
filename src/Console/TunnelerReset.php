@@ -1,8 +1,9 @@
 <?php
-namespace STS\Tunneler\Console;
+namespace LeoPersan\Tunneler\Console;
 
 use Illuminate\Console\Command;
-use STS\Tunneler\Jobs\CreateTunnel;
+use Illuminate\Support\Facades\Artisan;
+use LeoPersan\Tunneler\Jobs\CreateTunnel;
 
 class TunnelerReset extends Command
 {
@@ -11,7 +12,7 @@ class TunnelerReset extends Command
      *
      * @var string
      */
-    protected $signature = 'tunneler:reset';
+    protected $signature = 'tunneler:reset {connections?*}';
 
     /**
      * The console command description.
@@ -35,11 +36,18 @@ class TunnelerReset extends Command
      *
      * @return int
      */
-    public function handle()
+    public function handle(): int
     {
-        $tunnel = new CreateTunnel();
-        $tunnel->destroyTunnel();
+        $connections = $this->argument('connections') ?? array_keys(config('tunneler.connections'));
+        foreach ($connections as $connection) {
+            $this->handleConnection($connection);
+        }
+        return Artisan::call('tunneler:activate', $connections);
+    }
 
-        \Artisan::call('tunneler:activate');
+    private function handleConnection(string $connection): void
+    {
+        $tunnel = new CreateTunnel($connection);
+        $tunnel->destroyTunnel();
     }
 }

@@ -1,8 +1,8 @@
-<?php namespace	STS\Supervisor;
+<?php namespace	LeoPersan\Supervisor;
 
 use Illuminate\Support\ServiceProvider;
-use STS\Supervisor\Console\DaemonCommand;
-use STS\Supervisor\Daemon\Listener;
+use LeoPersan\Tunneler\Console\DaemonCommand;
+use LeoPersan\Tunneler\Daemon\Listener;
 
 class DaemonServiceProvider extends ServiceProvider {
     /**

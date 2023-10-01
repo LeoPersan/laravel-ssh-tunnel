@@ -1,7 +1,7 @@
-<?php namespace STS\Supervisor\Console;
+<?php namespace LeoPersan\Tunneler\Console;
 
 use Illuminate\Console\Command;
-use STS\Supervisor\Daemon\Listener;
+use LeoPersan\Tunneler\Daemon\Listener;
 use Symfony\Component\Console\Input\InputArgument;
 use Symfony\Component\Console\Input\InputOption;
 
@@ -24,9 +24,9 @@ class DaemonCommand extends Command
     /**
      * The queue listener instance.
      *
-     * @var \Illuminate\Queue\Listener
+     * @var Listener
      */
-    protected $listener;
+    protected Listener $listener;
 
     /**
      * DaemonCommand constructor.
@@ -45,7 +45,7 @@ class DaemonCommand extends Command
      *
      * @return void
      */
-    public function fire()
+    public function fire(): void
     {
         $this->setListenerOptions();
 
@@ -73,10 +73,10 @@ class DaemonCommand extends Command
     /**
      * Get the name of the queue connection to listen on.
      *
-     * @param  string  $connection
+     * @param string|null $connection
      * @return string
      */
-    protected function getQueue($connection)
+    protected function getQueue(?string $connection): string
     {
         if (is_null($connection)) {
             $connection = $this->laravel['config']['queue.default'];
@@ -92,7 +92,7 @@ class DaemonCommand extends Command
      *
      * @return void
      */
-    protected function setListenerOptions()
+    protected function setListenerOptions(): void
     {
         $this->listener->setEnvironment($this->laravel->environment());
 
@@ -121,7 +121,7 @@ class DaemonCommand extends Command
      *
      * @return array
      */
-    protected function getArguments()
+    protected function getArguments(): array
     {
         return [
             ['connection', InputArgument::OPTIONAL, 'The name of connection'],
@@ -133,7 +133,7 @@ class DaemonCommand extends Command
      *
      * @return array
      */
-    protected function getOptions()
+    protected function getOptions(): array
     {
         return [
             ['queue', null, InputOption::VALUE_OPTIONAL, 'The queue to listen on', null],

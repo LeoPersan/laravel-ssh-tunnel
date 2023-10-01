@@ -1,11 +1,14 @@
-<?php namespace STS\Supervisor\Daemon;
+<?php
+
+namespace LeoPersan\Tunneler\Daemon;
 
 use Illuminate\Queue\Listener as QueueListener;
 use Symfony\Component\Process\Process;
 
 pcntl_async_signals(true);
 
-class Listener extends QueueListener{
+class Listener extends QueueListener
+{
 
     /**
      * Set to true if we catch a signal and need to
